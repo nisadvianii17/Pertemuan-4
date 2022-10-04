@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #mycanvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mycanvas" width="300" height="300">
+    </canvas>
+    <script>
+        const kanvas = document.querySelector("#mycanvas");
+        console.log(kanvas);
+        const ctx = kanvas.getContext("2d");
+
+        // ambil data
+        let dataGambar = ctx.getImageData(0,0,kanvas.width, kanvas.height);
+        
+        function boundaryFill(datanya, posisi, batas, warna){
+        
+            // kalau titik yg diposisi bisa diwarna
+            const warna_titik_skrng = get_warna_titik(datanya, posisi);
+            // if(warna_titik_skrng.r != batas.r){
+            //     // warnai
+            //     gbr_titik(datanya,posisi,warna);
+            //     boundaryFill(datanya, {x:posisi.x, y:posisi.y-1}, batas, warna);
+            //     boundaryFill(datanya, {x:posisi.x, y:posisi.y-1}, batas, warna);
+            //     boundaryFill(datanya, {x:posisi.x+1, y:posisi.y}, batas, warna);
+            //     boundaryFill(datanya, {x:posisi.x-1, y:posisi.y}, batas, warna);
+            // }
+
+            let myStack = [];
+            myStack.push(posisi);
+            while (myStack.length > 0){
+                posisi = myStack.pop();
+                warna_titik_skrng = get_warna_titik(datanya, posisi);
+                if (!cekWarna)
+            }
+        }
+
+        function get_warna_titik(datanya, posisi){
+            let {x,y} = posisi;
+            let index = (x + y * kanvas.width) * 4;
+
+            let r,g,b;
+            r = datanya.data[index];
+            g = datanya.data[index + 1];
+            b = datanya.data[index + 2];
+
+            return {r:r,g:g,b:b};
+        }
+
+        function cekWarna(color1,color2){
+            if (color1.r == color2.r && color1.g == color2.g && color1.b == color2.b){
+                return true
+            }
+            else {
+                return false
+            }
+        }
+
+        // membuat sebuah function / i = x + (y . w) + 4
+        function gbr_titik(datanya, posisi, warna){
+            // let x = posisi.x;
+            // let y = posisi.y;
+            let {x, y} = posisi;
+            let {r, g, b} = warna;
+            let index = (x + y * kanvas.width) * 4;
+            datanya.data[index] = r;
+            datanya.data[index+1] = g;
+            datanya.data[index+2] = b;
+            datanya.data[index+3] = 255;
+        }
+        
+        function garis(datanya, awal, akhir, warnanya){
+                let [x1, y1] = awal;
+                let [x2, y2] = akhir;
+                let [r, g, b] = warnanya;
+
+                let dx = x2-x1;
+                let dy = y2-y1;
+                // console.log(`${dx} ${dy}`)
+                if (Math.abs(dy) > Math.abs(dx)){
+                    // jalan berdasarkan y
+                    if (y2>y1) {
+                        let x = x1;
+                        for (let y = y1;y<y2;y++){
+                        x += dx/Math.abs(dy); 
+                        // pake math.round biar ga putus2
+                        gbr_titik(datanya, {x:Math.round(x),y:Math.round(y)}, {r:r,g:g,b:b});
+                        }
+                    }
+                    else {
+                        for (let y = y1;y>y2;y--){
+                        x += dx/Math.abs(dy); 
+                        gbr_titik(datanya, {x:Math.round(x),y:Math.round(y)}, {r:r,g:g,b:b});
+                        }
+                    }
+                }   
+                else {
+                    // jalan berdasarkan x
+                    if (x2>x1) {
+                        let y = y1;
+                        for (let x = x1;x<x2;x++){
+                        y += dy/Math.abs(dx); 
+                        // pake math.round biar ga putus2
+                        gbr_titik(datanya, {x:Math.round(x),y:Math.round(y)}, {r:r,g:g,b:b});
+                        }
+                    }
+                    else {
+                        for (let x = x1;x>x2;x--){
+                        y += dy/Math.abs(dx); 
+                        gbr_titik(datanya, {x:Math.round(x),y:Math.round(y)}, {r:r,g:g,b:b});
+                        }
+                    }
+                }
+            }
+
+        garis(dataGambar, [100,100], [100,200], [255,0,0]); // garis lurus bawah
+        garis(dataGambar, [100,100], [200,100], [255,0,0]); // garis lurus pinggir
+        garis(dataGambar, [200,100], [200,200], [255,0,0]); // garis lurus bawah
+        garis(dataGambar, [100,200], [200,200], [255,0,0]); // garis lurus pinggir
+
+        boundaryFill(dataGambar, {x:150,y:150}, {r:255,g:0,b:0}, {r:255,g:0,b:0});
+        ctx.putImageData(dataGambar,0,0);
+</script>
+</body>
+</html>
